@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: lifeos-tasks
+Version: 0.1.0
+Requires-Python: >=3.11
+Requires-Dist: fastapi>=0.110
+Requires-Dist: uvicorn[standard]>=0.27
+Requires-Dist: sqlalchemy>=2.0
+Requires-Dist: psycopg[binary]>=3.1
+Provides-Extra: ai
+Requires-Dist: openai>=1.0; extra == "ai"
+Requires-Dist: anthropic>=0.18; extra == "ai"

@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+  <title>LifeOS Tasks</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header>LifeOS Tasks</header>
+
+<main>
+  <h2>Inbox (Raw Events)</h2>
+  <div id="inbox"></div>
+
+  <h2>Review Queue</h2>
+  <div id="review"></div>
+
+  <h3>Recently Approved</h3>
+  <div id="approved"></div>
+
+  <h2>Active Tasks</h2>
+  <div id="tasks"></div>
+
+  <h3>Add Task</h3>
+  <input id="title" placeholder="Task title">
+  <button onclick="addTask()">Add</button>
+
+  <h3>Add Raw Event</h3>
+  <input id="payload" placeholder="Raw note">
+  <select id="source">
+    <option value="manual">Manual</option>
+    <option value="dictation">Dictation</option>
+    <option value="slack">Slack</option>
+  </select>
+  <button onclick="addEvent()">Add to Inbox</button>
+</main>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+pyproject.toml
+app/__init__.py
+app/api_review.py
+app/ingest_dictation.py
+app/ingest_slack.py
+app/main.py
+app/worker.py
+lifeos_tasks.egg-info/PKG-INFO
+lifeos_tasks.egg-info/SOURCES.txt
+lifeos_tasks.egg-info/dependency_links.txt
+lifeos_tasks.egg-info/requires.txt
+lifeos_tasks.egg-info/top_level.txt
+tests/test_stage9_safety.py
