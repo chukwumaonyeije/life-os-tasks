@@ -70,11 +70,42 @@ tests/                   # Acceptance tests
 ## Quick Start
 
 ```bash
+# Option 1: Full Docker stack
+docker-compose up -d              # Start all services
+open http://localhost:8000        # Access the app
+
+# Option 2: Local development
 make install       # Install dependencies
-make up            # Start PostgreSQL + Redis
+make up            # Start PostgreSQL + Redis only
 make dev           # Start API server (http://localhost:8000)
 make worker        # Start background worker (separate terminal)
 ```
+
+## Docker
+
+```bash
+# Build and run entire stack
+docker-compose up -d
+
+# Build with AI support
+docker build --target with-ai -t lifeos-tasks:ai .
+
+# View logs
+docker-compose logs -f app
+docker-compose logs -f worker
+
+# Stop all services
+docker-compose down
+
+# Reset database
+docker-compose down -v
+```
+
+Services:
+- `app` - FastAPI server (port 8000)
+- `worker` - Background event processor
+- `postgres` - PostgreSQL 16 (port 5432)
+- `redis` - Redis 7 (port 6379)
 
 ## Makefile Commands
 

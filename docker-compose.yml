@@ -1,6 +1,45 @@
 version: "3.8"
 
 services:
+  app:
+    build: .
+    container_name: lifeos-app
+    environment:
+      DATABASE_URL: postgresql+psycopg://lifeos:lifeos@postgres:5432/lifeos
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      AI_PROVIDER: ${AI_PROVIDER:-none}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  worker:
+    build: .
+    container_name: lifeos-worker
+    command: python -m app.worker
+    environment:
+      DATABASE_URL: postgresql+psycopg://lifeos:lifeos@postgres:5432/lifeos
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      AI_PROVIDER: ${AI_PROVIDER:-none}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
   postgres:
     image: postgres:16-alpine
     container_name: lifeos-postgres
