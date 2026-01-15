@@ -1,4 +1,4 @@
-.PHONY: help install install-ai dev worker test up down reset logs psql redis-cli clean
+.PHONY: help install install-ai install-dev dev worker test lint typecheck up down reset logs psql redis-cli clean
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
@@ -13,6 +13,9 @@ install:  ## Install core dependencies
 install-ai:  ## Install with AI support (OpenAI + Anthropic)
 	pip install -e ".[ai]"
 
+install-dev:  ## Install dev dependencies (testing, linting)
+	pip install -e ".[dev]"
+
 # =============================================================================
 # Development
 # =============================================================================
@@ -24,7 +27,18 @@ worker:  ## Start background worker
 	python -m app.worker
 
 test:  ## Run tests
-	pytest tests/
+	pytest tests/ -v
+
+lint:  ## Run linter (ruff)
+	ruff check .
+	ruff format --check .
+
+format:  ## Format code with ruff
+	ruff format .
+	ruff check --fix .
+
+typecheck:  ## Run type checker (mypy)
+	mypy app --ignore-missing-imports
 
 # =============================================================================
 # Docker

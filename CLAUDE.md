@@ -83,9 +83,13 @@ make worker        # Start background worker (separate terminal)
 | `make help` | Show all available commands |
 | `make install` | Install core dependencies |
 | `make install-ai` | Install with AI support |
+| `make install-dev` | Install dev dependencies (testing, linting) |
 | `make dev` | Start API server with auto-reload |
 | `make worker` | Start background worker |
 | `make test` | Run tests |
+| `make lint` | Run linter (ruff) |
+| `make format` | Format code with ruff |
+| `make typecheck` | Run type checker (mypy) |
 | `make up` | Start PostgreSQL and Redis |
 | `make down` | Stop containers |
 | `make reset` | Stop and delete volumes (reset DB) |
@@ -93,6 +97,14 @@ make worker        # Start background worker (separate terminal)
 | `make psql` | Connect to PostgreSQL |
 | `make redis-cli` | Connect to Redis |
 | `make clean` | Remove Python cache files |
+
+## CI/CD
+
+GitHub Actions runs on push/PR to `main`:
+- **Lint**: Ruff linter and formatter
+- **Type Check**: mypy
+- **Test**: pytest with PostgreSQL and Redis services
+- **Build Check**: Verify imports work
 
 Default DB connection: `postgresql://lifeos:lifeos@localhost:5432/lifeos`
 
