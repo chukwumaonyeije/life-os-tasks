@@ -3,18 +3,32 @@ CI: add workflow and import/export tests
 
 ## Summary
 
-This PR adds a GitHub Actions workflow (`.github/workflows/ci.yml`) that installs dev
-dependencies and runs the test suite on Python 3.11. It also adds additional tests
-to improve coverage for the import/export functionality (invalid inputs, large
-payloads, and per-field override behavior).
+This PR adds a GitHub Actions workflow (`.github/workflows/ci.yml`) that installs
+development dependencies and runs the full test suite on Python 3.11. It also
+introduces a set of targeted tests that improve coverage around the import/export
+feature (validation, edge cases, and per-field merge overrides).
+
+## Motivation
+
+- Ensure the repository runs tests automatically on push/PRs to catch regressions.
+- Add safety checks around the import/export feature so future changes are
+  verified by CI before merging.
 
 ## Changes
 
-- Add CI workflow: `.github/workflows/ci.yml`
-- Add tests:
-  - `tests/test_import_invalid.py` (malformed / wrong content-type checks)
-  - `tests/test_import_edgecases.py` (large payloads, invalid datetimes)
-  - `tests/test_import_overrides.py` (per-field override coverage)
+- Add CI workflow: `.github/workflows/ci.yml` — installs `.[dev]` and runs `pytest`.
+- Add tests to broaden coverage for import/export:
+  - `tests/test_import_invalid.py` — rejects wrong content types and malformed JSON.
+  - `tests/test_import_edgecases.py` — large payload handling and invalid datetime parsing.
+  - `tests/test_import_overrides.py` — verifies per-field override merge semantics.
+
+## Security & Deployment Notes
+
+- The import endpoints currently accept JSON uploads and perform `merge` semantics.
+  They are intentionally permissive for local-first workflows. Before making the
+  service publicly accessible, add authentication, authorization, and rate-limiting
+  (e.g., token-based auth or reverse-proxy protections) to avoid accidental or
+  malicious data imports.
 
 ## How to test locally
 
@@ -22,7 +36,10 @@ payloads, and per-field override behavior).
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate   # or .venv\Scripts\Activate.ps1 on Windows
+# macOS / Linux
+source .venv/bin/activate
+# Windows PowerShell
+.venv\Scripts\Activate.ps1
 pip install --upgrade pip
 pip install '.[dev]'
 ```
@@ -33,10 +50,19 @@ pip install '.[dev]'
 python -m pytest -q
 ```
 
-## Notes
+## Review checklist
 
-- The workflow uses the `dev` extras from `pyproject.toml` to install test tools.
-- The import endpoints are intentionally permissive in the preview step; hardening
-  (auth/rate-limiting) will be added before any public deployment.
+- [ ] CI passes on this branch
+- [ ] Tests added are clear and maintainable
+- [ ] Import/export behavior is acceptable for local workflows
+- [ ] Plan for hardening import endpoint before public hosting is documented
 
-If you'd like, I can update this PR body before opening the pull request on GitHub.
+## Files changed (high level)
+
+- `.github/workflows/ci.yml` — CI workflow
+- `tests/test_import_invalid.py`
+- `tests/test_import_edgecases.py`
+- `tests/test_import_overrides.py`
+
+If you'd like a different PR description or additions to the checklist, tell me
+what to include and I will update this file and push the change to the branch.
