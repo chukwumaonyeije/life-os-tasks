@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from app.api_review import router as review_router
+from app.api_export import router as export_router
 from app.core.logging_config import setup_logging
 from app.ingest_dictation import router as dictation_router
 from app.ingest_slack import router as slack_router
@@ -29,6 +30,7 @@ app = FastAPI(
 app.include_router(slack_router)
 app.include_router(dictation_router)
 app.include_router(review_router)
+app.include_router(export_router)
 
 
 # -------------------------------------------------

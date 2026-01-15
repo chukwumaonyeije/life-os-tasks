@@ -1,41 +1,110 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <title>LifeOS Tasks</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LifeOS Tasks — Second Brain</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<header>LifeOS Tasks</header>
+  <div class="app">
+    <aside class="sidebar" aria-label="Main navigation">
+      <div class="brand">LifeOS</div>
+      <nav>
+        <ul>
+          <li class="active">Inbox</li>
+          <li>Review Queue</li>
+          <li>Recently Approved</li>
+          <li>Active Tasks</li>
+        </ul>
+      </nav>
+      <div class="footer-small">Personal Second Brain · Local-first</div>
+    </aside>
 
-<main>
-  <h2>Inbox (Raw Events)</h2>
-  <div id="inbox"></div>
+    <main class="content">
+      <header class="topbar">
+        <h1>LifeOS Tasks</h1>
+        <div class="top-actions">
+          <button id="export-btn" class="btn" title="Download JSON archive">Export JSON</button>
+          <label class="btn" for="import-file" style="cursor:pointer;">Import JSON</label>
+          <input id="import-file" type="file" accept="application/json" style="display:none">
+          <a class="host-link" href="https://life-os-tasks.com" target="_blank" rel="noopener">Website</a>
+        </div>
+      </header>
 
-  <h2>Review Queue</h2>
-  <div id="review"></div>
+      <section class="grid">
+        <section class="panel" aria-labelledby="inbox-heading">
+          <h2 id="inbox-heading">Inbox (Raw Events)</h2>
+          <div id="inbox" class="list"></div>
+        </section>
 
-  <h3>Recently Approved</h3>
-  <div id="approved"></div>
+        <section class="panel" aria-labelledby="review-heading">
+          <h2 id="review-heading">Review Queue</h2>
+          <div id="review" class="list"></div>
+        </section>
 
-  <h2>Active Tasks</h2>
-  <div id="tasks"></div>
+        <section class="panel" aria-labelledby="approved-heading">
+          <h3 id="approved-heading">Recently Approved</h3>
+          <div id="approved" class="list compact"></div>
+        </section>
 
-  <h3>Add Task</h3>
-  <input id="title" placeholder="Task title">
-  <button onclick="addTask()">Add</button>
+        <section class="panel span" aria-labelledby="tasks-heading">
+          <h2 id="tasks-heading">Active Tasks</h2>
+          <div id="tasks" class="list"></div>
 
-  <h3>Add Raw Event</h3>
-  <input id="payload" placeholder="Raw note">
-  <select id="source">
-    <option value="manual">Manual</option>
-    <option value="dictation">Dictation</option>
-    <option value="slack">Slack</option>
-  </select>
-  <button onclick="addEvent()">Add to Inbox</button>
-</main>
+          <form id="add-task-form" class="form-row" onsubmit="event.preventDefault(); addTask();">
+            <label class="sr-only" for="title">Task title</label>
+            <input id="title" name="title" placeholder="Task title" autocomplete="off">
+            <button type="submit" class="btn primary">Add</button>
+          </form>
 
-<div id="toast" class="toast hidden"></div>
+          <form id="add-event-form" class="form-row" onsubmit="event.preventDefault(); addEvent();">
+            <label class="sr-only" for="payload">Raw note</label>
+            <input id="payload" name="payload" placeholder="Raw note" autocomplete="off">
+            <select id="source" name="source" aria-label="Source">
+              <option value="manual">Manual</option>
+              <option value="dictation">Dictation</option>
+              <option value="slack">Slack</option>
+            </select>
+            <button type="submit" class="btn">Add to Inbox</button>
+          </form>
+        </section>
+      </section>
 
-<script src="/app.js"></script>
+      <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+    </main>
+  </div>
+
+  <script src="/focus-trap.js"></script>
+  <script src="/app.js"></script>
 </body>
 </html>
+
+
+<!-- Import Preview Modal -->
+<div id="import-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="import-modal-title">
+  <div class="modal-backdrop" id="modal-backdrop"></div>
+  <div class="modal-panel" role="document">
+    <header class="modal-header">
+      <h2 id="import-modal-title">Import Preview</h2>
+      <button id="modal-close" aria-label="Close">✕</button>
+    </header>
+
+    <div class="modal-body">
+      <div id="modal-announcer" class="sr-only" role="status" aria-live="polite"></div>
+      <div id="preview-summary" class="card"></div>
+
+      <div id="preview-collisions" style="margin-top:12px"></div>
+
+      <div id="preview-samples" style="margin-top:12px"></div>
+    </div>
+
+    <footer class="modal-footer">
+      <button id="modal-cancel" class="btn">Cancel</button>
+      <button id="modal-confirm" class="btn primary">Confirm Import</button>
+    </footer>
+  </div>
+</div>
