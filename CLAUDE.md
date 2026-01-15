@@ -143,8 +143,9 @@ Default DB connection: `postgresql://lifeos:lifeos@localhost:5432/lifeos`
 
 Copy `.env.example` to `.env` and configure:
 
-- `DATABASE_URL` - PostgreSQL connection string
-- `REDIS_URL` - Redis connection string
+- `DATABASE_URL` - PostgreSQL connection string (e.g., `postgresql+psycopg://user:pass@host:5432/db`)
+- `REDIS_HOST` - Redis hostname (default: `localhost`)
+- `REDIS_PORT` - Redis port (default: `6379`)
 - `AI_PROVIDER` - `openai` | `anthropic` | `none`
 - `AI_MODEL` - Provider-specific model name
 - `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` - API credentials
