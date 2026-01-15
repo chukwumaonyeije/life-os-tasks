@@ -67,16 +67,29 @@ migrations/              # SQL migrations
 tests/                   # Acceptance tests
 ```
 
+## Local Development with Docker
+
+```bash
+# Start PostgreSQL and Redis
+docker-compose up -d
+
+# Stop services
+docker-compose down
+
+# Stop and remove volumes (reset database)
+docker-compose down -v
+```
+
+Migrations in `migrations/` run automatically on first start.
+
+Default connection: `postgresql://lifeos:lifeos@localhost:5432/lifeos`
+
 ## Key Commands
 
 ```bash
 # Install dependencies
 pip install -e .                      # Core only
 pip install -e ".[ai]"                # With AI support
-
-# Run database migrations
-psql -U lifeos -d lifeos -f migrations/001_stage8_audit_and_lifecycle.sql
-psql -U lifeos -d lifeos -f migrations/002_stage9_ai_suggestions.sql
 
 # Start API server
 uvicorn app.main:app --reload
