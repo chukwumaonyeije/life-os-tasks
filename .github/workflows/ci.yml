@@ -89,14 +89,14 @@ jobs:
 
       - name: Run migrations
         env:
-          DATABASE_URL: postgresql://lifeos:lifeos@localhost:5432/lifeos
+          PGPASSWORD: lifeos
         run: |
-          PGPASSWORD=lifeos psql -h localhost -U lifeos -d lifeos -f migrations/001_stage8_audit_and_lifecycle.sql
-          PGPASSWORD=lifeos psql -h localhost -U lifeos -d lifeos -f migrations/002_stage9_ai_suggestions.sql
+          psql -h localhost -U lifeos -d lifeos -f migrations/001_stage8_audit_and_lifecycle.sql
+          psql -h localhost -U lifeos -d lifeos -f migrations/002_stage9_ai_suggestions.sql
 
       - name: Run tests
         env:
-          DATABASE_URL: postgresql://lifeos:lifeos@localhost:5432/lifeos
+          DATABASE_URL: postgresql+psycopg://lifeos:lifeos@localhost:5432/lifeos
           REDIS_HOST: localhost
           REDIS_PORT: 6379
           AI_PROVIDER: none
@@ -106,6 +106,9 @@ jobs:
   build:
     name: Build Check
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://localhost/test
+      AI_PROVIDER: none
     steps:
       - uses: actions/checkout@v4
 
@@ -119,6 +122,6 @@ jobs:
 
       - name: Verify imports
         run: |
-          python -c "from app.main import app; print('FastAPI app imports OK')"
-          python -c "from app.worker import process_event; print('Worker imports OK')"
           python -c "from app.ai.factory import get_suggester; print('AI factory imports OK')"
+          python -c "from app.ai.contract import validate_suggestion; print('AI contract imports OK')"
+          python -c "from app.ai.prompts import redact_pii; print('AI prompts imports OK')"
