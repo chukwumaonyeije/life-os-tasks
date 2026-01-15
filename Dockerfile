@@ -11,17 +11,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy project metadata
+# Copy project files
 COPY pyproject.toml .
+COPY app/ app/
+COPY static/ static/
+COPY migrations/ migrations/
 
 # Install the application package
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir .
-
-# Copy application code
-COPY app/ app/
-COPY static/ static/
-COPY migrations/ migrations/
 
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash appuser \
