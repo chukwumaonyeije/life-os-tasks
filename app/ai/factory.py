@@ -48,6 +48,8 @@ def get_suggester() -> AISuggester | None:
         return None
 
     try:
+        suggester: AISuggester
+
         if provider == "openai":
             from app.ai.providers.openai_suggester import OpenAISuggester
 

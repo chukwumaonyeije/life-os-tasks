@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -26,9 +28,9 @@ def get_review_queue(db: Session = Depends(get_db)):
         .all()
     )
 
-    result = []
+    result: list[dict[str, Any]] = []
     for c in candidates:
-        item = {
+        item: dict[str, Any] = {
             "id": c.id,
             "title": c.title,
             "description": c.description,
