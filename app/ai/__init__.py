@@ -11,6 +11,6 @@ Key Principles:
 - Auditability: All suggestions are traceable
 """
 
-from app.ai.contract import AISuggestion, validate_suggestion, suggestion_to_dict
+from app.ai.contract import AISuggestion, suggestion_to_dict, validate_suggestion
 
-__all__ = ['AISuggestion', 'validate_suggestion', 'suggestion_to_dict']
+__all__ = ["AISuggestion", "validate_suggestion", "suggestion_to_dict"]

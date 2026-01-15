@@ -1,10 +1,13 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, DateTime, Text
-from datetime import datetime
 import uuid
+from datetime import datetime
+
+from sqlalchemy import DateTime, String, Text
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
 
 class Base(DeclarativeBase):
     pass
+
 
 class Task(Base):
     __tablename__ = "tasks"

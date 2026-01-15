@@ -7,15 +7,14 @@ All AI-related operations are logged for audit and debugging.
 
 import logging
 import sys
-from typing import Optional
 
 
 def setup_logging(level: str = "INFO") -> None:
     """Configure structured logging for the application.
-    
+
     Args:
         level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-        
+
     Usage:
         # In main.py or worker.py startup
         from app.core.logging_config import setup_logging
@@ -23,43 +22,41 @@ def setup_logging(level: str = "INFO") -> None:
     """
     # Convert string level to logging constant
     numeric_level = getattr(logging, level.upper(), logging.INFO)
-    
+
     # Root logger configuration
     logging.basicConfig(
         level=numeric_level,
-        format='%(asctime)s [%(levelname)8s] %(name)s: %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S',
-        handlers=[
-            logging.StreamHandler(sys.stdout)
-        ]
+        format="%(asctime)s [%(levelname)8s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        handlers=[logging.StreamHandler(sys.stdout)],
     )
-    
+
     # Set specific logger levels
-    logging.getLogger('app.ai').setLevel(logging.INFO)
-    logging.getLogger('app.worker').setLevel(logging.INFO)
-    logging.getLogger('app.ai.factory').setLevel(logging.INFO)
-    logging.getLogger('app.ai.providers').setLevel(logging.INFO)
-    
+    logging.getLogger("app.ai").setLevel(logging.INFO)
+    logging.getLogger("app.worker").setLevel(logging.INFO)
+    logging.getLogger("app.ai.factory").setLevel(logging.INFO)
+    logging.getLogger("app.ai.providers").setLevel(logging.INFO)
+
     # Suppress noisy third-party loggers
-    logging.getLogger('urllib3').setLevel(logging.WARNING)
-    logging.getLogger('httpx').setLevel(logging.WARNING)
-    logging.getLogger('httpcore').setLevel(logging.WARNING)
-    logging.getLogger('openai').setLevel(logging.WARNING)
-    logging.getLogger('anthropic').setLevel(logging.WARNING)
-    
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("httpcore").setLevel(logging.WARNING)
+    logging.getLogger("openai").setLevel(logging.WARNING)
+    logging.getLogger("anthropic").setLevel(logging.WARNING)
+
     logger = logging.getLogger(__name__)
     logger.info(f"Logging configured at level: {level}")
 
 
 def get_logger(name: str) -> logging.Logger:
     """Get a logger instance with the given name.
-    
+
     Args:
         name: Logger name (usually __name__)
-        
+
     Returns:
         Configured logger instance
-        
+
     Usage:
         logger = get_logger(__name__)
         logger.info("Message")
@@ -80,10 +77,10 @@ def log_ai_suggestion(
     provider: str,
     model: str,
     success: bool,
-    error: Optional[str] = None
+    error: str | None = None,
 ) -> None:
     """Log AI suggestion attempt with structured data.
-    
+
     Args:
         logger: Logger instance
         event_id: Raw event ID
@@ -94,8 +91,7 @@ def log_ai_suggestion(
     """
     if success:
         logger.info(
-            f"AI suggestion successful | event={event_id} | "
-            f"provider={provider} | model={model}"
+            f"AI suggestion successful | event={event_id} | provider={provider} | model={model}"
         )
     else:
         logger.warning(
@@ -104,13 +100,9 @@ def log_ai_suggestion(
         )
 
 
-def log_validation_failure(
-    logger: logging.Logger,
-    reason: str,
-    data: Optional[dict] = None
-) -> None:
+def log_validation_failure(logger: logging.Logger, reason: str, data: dict | None = None) -> None:
     """Log AI output validation failure.
-    
+
     Args:
         logger: Logger instance
         reason: Why validation failed
@@ -123,14 +115,10 @@ def log_validation_failure(
 
 
 def log_provider_init(
-    logger: logging.Logger,
-    provider: str,
-    model: str,
-    success: bool,
-    error: Optional[str] = None
+    logger: logging.Logger, provider: str, model: str, success: bool, error: str | None = None
 ) -> None:
     """Log AI provider initialization.
-    
+
     Args:
         logger: Logger instance
         provider: Provider name

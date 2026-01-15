@@ -7,12 +7,11 @@ def summarize(text: str) -> dict:
     """
     summary = text.strip()
 
-    tasks = [{
-        "title": text[:60],
-        "description": text,
-    }]
+    tasks = [
+        {
+            "title": text[:60],
+            "description": text,
+        }
+    ]
 
-    return {
-        "summary": summary,
-        "tasks": tasks
-    }
+    return {"summary": summary, "tasks": tasks}

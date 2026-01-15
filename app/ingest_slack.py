@@ -1,12 +1,15 @@
 import json
-from fastapi import APIRouter, Request, Depends
+
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
+
 from app.core.db import get_db
-from app.models.raw_event import RawEvent
-from app.core.security import verify_slack_signature
 from app.core.queue import enqueue_raw_event
+from app.core.security import verify_slack_signature
+from app.models.raw_event import RawEvent
 
 router = APIRouter()
+
 
 @router.post("/ingest/slack/events")
 async def ingest_slack(request: Request, db: Session = Depends(get_db)):
@@ -21,10 +24,7 @@ async def ingest_slack(request: Request, db: Session = Depends(get_db)):
     signature = request.headers.get("X-Slack-Signature", "")
     verify_slack_signature(raw_body, timestamp, signature)
 
-    event = RawEvent(
-        source="slack",
-        payload=json.dumps(payload)
-    )
+    event = RawEvent(source="slack", payload=json.dumps(payload))
     db.add(event)
     db.commit()
 

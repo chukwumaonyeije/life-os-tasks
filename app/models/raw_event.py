@@ -1,10 +1,13 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, DateTime, Text, Boolean
-from datetime import datetime
 import uuid
+from datetime import datetime
+
+from sqlalchemy import Boolean, DateTime, String, Text
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
 
 class Base(DeclarativeBase):
     pass
+
 
 class RawEvent(Base):
     __tablename__ = "raw_events"
