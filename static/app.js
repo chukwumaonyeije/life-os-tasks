@@ -403,6 +403,72 @@ function showImportModal(previewPayload, file){
     samples.appendChild(sec);
   });
 
+    // diffs
+    const diffsContainer = document.getElementById('preview-diffs');
+    if(diffsContainer) diffsContainer.innerHTML = '';
+    const diffs = previewPayload.preview.diffs || {};
+    Object.keys(diffs).forEach(collName=>{
+      const coll = diffs[collName];
+      if(!coll || Object.keys(coll).length === 0) return;
+      const title = document.createElement('div');
+      title.innerHTML = `<h4 style="margin-top:12px">Field differences: ${collName}</h4>`;
+      if(diffsContainer) diffsContainer.appendChild(title);
+      Object.keys(coll).forEach(id=>{
+        const entry = coll[id];
+        const entDiv = document.createElement('div'); entDiv.style.marginTop='8px';
+        entDiv.innerHTML = `<strong>${id}</strong>`;
+        const table = document.createElement('table'); table.style.width='100%'; table.style.borderCollapse='collapse'; table.style.marginTop='6px';
+        const thead = document.createElement('thead'); thead.innerHTML = `<tr><th style="text-align:left;padding:6px;border-bottom:1px solid #e6eef8">Field</th><th style="text-align:left;padding:6px;border-bottom:1px solid #e6eef8">Existing</th><th style="text-align:left;padding:6px;border-bottom:1px solid #e6eef8">Incoming</th></tr>`;
+        table.appendChild(thead);
+        const tbody = document.createElement('tbody');
+        Object.keys(entry).forEach(field=>{
+          const row = document.createElement('tr'); row.className = 'diff-row';
+          const a = document.createElement('td'); a.style.padding='6px'; a.textContent = field;
+          row.dataset.field = field;
+
+          function renderValue(val){
+            const cell = document.createElement('td'); cell.style.padding='6px';
+            const pre = document.createElement('pre'); pre.className = 'diff-value collapsed';
+            let text;
+            try{
+              if (val === null || val === undefined) text = String(val);
+              else if (typeof val === 'object') text = JSON.stringify(val, null, 2);
+              else text = String(val);
+            }catch(e){ text = String(val); }
+            pre.textContent = text;
+
+            const btn = document.createElement('button'); btn.className = 'expand-btn'; btn.type='button'; btn.setAttribute('aria-expanded','false'); btn.textContent = 'Expand';
+            btn.addEventListener('click', ()=>{
+              const expanded = btn.getAttribute('aria-expanded') === 'true';
+              if (expanded){ pre.classList.add('collapsed'); btn.setAttribute('aria-expanded','false'); btn.textContent = 'Expand'; }
+              else { pre.classList.remove('collapsed'); btn.setAttribute('aria-expanded','true'); btn.textContent = 'Collapse'; }
+            });
+
+            cell.appendChild(pre);
+            cell.appendChild(btn);
+            return cell;
+          }
+
+          const b = renderValue(entry[field].existing);
+          const c = renderValue(entry[field].incoming);
+
+          // add override selector to the leftmost cell
+          const select = document.createElement('select');
+          select.innerHTML = '<option value="incoming">Use incoming</option><option value="existing">Keep existing</option>';
+          select.className = 'override-select';
+          select.style.marginLeft = '8px';
+          select.setAttribute('aria-label', `Override ${field}`);
+          a.appendChild(select);
+
+          row.appendChild(a); row.appendChild(b); row.appendChild(c);
+          tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+        entDiv.appendChild(table);
+        if(diffsContainer) diffsContainer.appendChild(entDiv);
+      });
+    });
+
   // show modal
   modal.classList.remove('hidden');
   // hide the main app to assist screen readers
@@ -460,6 +526,47 @@ function showImportModal(previewPayload, file){
     try{
       const form = new FormData();
       form.append('file', _pendingImportFile, _pendingImportFile.name);
+
+      // collect overrides from diff table
+      const overrides = {};
+      const diffsContainerLocal = document.getElementById('preview-diffs');
+      if (diffsContainerLocal){
+        // find each diff entry
+        const entries = diffsContainerLocal.querySelectorAll('div[data-coll]');
+        // fallback: we structured entries under elements with data attributes on parent when created
+      }
+
+      // Alternative collection: iterate over table rows and collect selects
+      const tables = modal.querySelectorAll('table');
+      tables.forEach(tbl=>{
+        const collSection = tbl.closest('[data-coll]');
+      });
+
+      // Fallback: iterate over all rows with data-field and find ancestor with coll/id
+      const rows = modal.querySelectorAll('.diff-row');
+      rows.forEach(r=>{
+        const field = r.dataset.field;
+        // find the parent entry that has data-id and data-coll
+        let parent = r.closest('div[data-id]') || r.closest('div[data-coll]');
+        if (!parent){
+          // try to climb until a parent with strong id text
+          parent = r.parentElement;
+        }
+        // recover collName and id from surrounding markup: we set them on entDiv when creating diffs
+        const collName = parent ? parent.dataset.coll : null;
+        const id = parent ? parent.dataset.id : null;
+        if (!collName || !id) return;
+        const sel = r.querySelector('.override-select');
+        const choice = sel ? sel.value : 'incoming';
+        overrides[collName] = overrides[collName] || {};
+        overrides[collName][id] = overrides[collName][id] || {};
+        overrides[collName][id][field] = choice;
+      });
+
+      if (Object.keys(overrides).length > 0){
+        form.append('overrides', JSON.stringify(overrides));
+      }
+
       const res = await fetch('/api/import', {method:'POST', body: form});
       const data = await res.json();
       if(!res.ok){ showToast(data.detail || 'Import failed', 'error'); }
