@@ -67,39 +67,34 @@ migrations/              # SQL migrations
 tests/                   # Acceptance tests
 ```
 
-## Local Development with Docker
+## Quick Start
 
 ```bash
-# Start PostgreSQL and Redis
-docker-compose up -d
-
-# Stop services
-docker-compose down
-
-# Stop and remove volumes (reset database)
-docker-compose down -v
+make install       # Install dependencies
+make up            # Start PostgreSQL + Redis
+make dev           # Start API server (http://localhost:8000)
+make worker        # Start background worker (separate terminal)
 ```
 
-Migrations in `migrations/` run automatically on first start.
+## Makefile Commands
 
-Default connection: `postgresql://lifeos:lifeos@localhost:5432/lifeos`
+| Command | Description |
+|---------|-------------|
+| `make help` | Show all available commands |
+| `make install` | Install core dependencies |
+| `make install-ai` | Install with AI support |
+| `make dev` | Start API server with auto-reload |
+| `make worker` | Start background worker |
+| `make test` | Run tests |
+| `make up` | Start PostgreSQL and Redis |
+| `make down` | Stop containers |
+| `make reset` | Stop and delete volumes (reset DB) |
+| `make logs` | Tail container logs |
+| `make psql` | Connect to PostgreSQL |
+| `make redis-cli` | Connect to Redis |
+| `make clean` | Remove Python cache files |
 
-## Key Commands
-
-```bash
-# Install dependencies
-pip install -e .                      # Core only
-pip install -e ".[ai]"                # With AI support
-
-# Start API server
-uvicorn app.main:app --reload
-
-# Start background worker (separate terminal)
-python -m app.worker
-
-# Run tests
-pytest tests/
-```
+Default DB connection: `postgresql://lifeos:lifeos@localhost:5432/lifeos`
 
 ## Environment Variables
 
